@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+
+    <!-- Global base: no cleartext -->
+    <base-config cleartextTrafficPermitted="false"/>
+
+    <!-- Domain-specific trust rules -->
+    <domain-config cleartextTrafficPermitted="false">
+        <!-- substitute your actual hostname -->
+        <domain includeSubdomains="true">10.0.2.2</domain>
+
+        <trust-anchors>
+            <!-- Trust the system CAs too -->
+            <certificates src="system" />
+            <!-- And trust your bundled certificate -->
+            <certificates src="@raw/my_api_cert" />
+        </trust-anchors>
+    </domain-config>
+
+</network-security-config>

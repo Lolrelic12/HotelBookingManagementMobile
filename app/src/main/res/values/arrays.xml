@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="availability_filter_options">
+        <item>All Rooms</item>
+        <item>Available Only</item>
+        <item>Unavailable Only</item>
+    </string-array>
+
+    <string-array name="sort_options">
+        <item>Room Number</item>
+        <item>Price (Low to High)</item>
+        <item>Rating (High to Low)</item>
+    </string-array>
+</resources>

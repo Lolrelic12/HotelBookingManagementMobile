@@ -1,43 +1,43 @@
-package com.example.hotelmanagement.dto;
+    package com.example.hotelmanagement.dto;
 
-import com.google.gson.annotations.SerializedName;
+    import com.google.gson.annotations.SerializedName;
 
-public class RoomResponse {
-    @SerializedName("id")
-    private String id;
+    public class RoomResponse {
+        @SerializedName("id")
+        private String id;
 
-    @SerializedName("roomId")
-    private String roomId;
+        @SerializedName("roomId")
+        private String roomId;
 
-    @SerializedName("roomNumber")
-    private String roomNumber;
+        @SerializedName("roomNumber")
+        private String roomNumber;
 
-    @SerializedName("roomTypeId")
-    private String roomTypeId;
+        @SerializedName("roomTypeId")
+        private String roomTypeId;
 
-    @SerializedName("description")
-    private String description;
+        @SerializedName("description")
+        private String description;
 
-    @SerializedName("capacity")
-    private int capacity;
+        @SerializedName("capacity")
+        private int capacity;
 
-    @SerializedName("price")
-    private double price;
+        @SerializedName("pricePerNight")
+        private double price;
 
-    @SerializedName("isAvailable")
-    private boolean isAvailable;
+        @SerializedName("isAvailable")
+        private boolean isAvailable;
 
-    @SerializedName("averageRating")
-    private double averageRating;
+        @SerializedName("averageRating")
+        private double averageRating;
 
-    @SerializedName("totalReviews")
-    private int totalReviews;
+        @SerializedName("totalReviews")
+        private int totalReviews;
 
-    @SerializedName("createdAt")
-    private String createdAt;
+        @SerializedName("createdAt")
+        private String createdAt;
 
-    @SerializedName("updatedAt")
-    private String updatedAt;
+        @SerializedName("updatedAt")
+        private String updatedAt;
 
     // Constructors
     public RoomResponse() {}

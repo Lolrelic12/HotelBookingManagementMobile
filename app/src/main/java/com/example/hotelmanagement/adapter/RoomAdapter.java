@@ -1,5 +1,7 @@
 package com.example.hotelmanagement.adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.hotelmanagement.R;
 import com.example.hotelmanagement.*;
 import com.example.hotelmanagement.dto.RoomResponse;
+import com.google.gson.Gson;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -17,6 +20,8 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     private List<RoomResponse> roomList;
     private DecimalFormat decimalFormat;
     private RoomTypeActivity roomTypeService;
+    private Context context;
+    private Gson gson = new Gson();
 
     public RoomAdapter(List<RoomResponse> roomList, RoomTypeActivity roomTypeService) {
         this.roomList = roomList;
@@ -27,6 +32,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     @NonNull
     @Override
     public RoomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        this.context = parent.getContext();
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_room, parent, false);
         return new RoomViewHolder(view);
     }
@@ -58,7 +64,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
         holder.tvCapacity.setText("Capacity: " + room.getCapacity() + " guests");
 
-        holder.tvPrice.setText("Price: $" + decimalFormat.format(room.getPrice()) + "/night");
+        holder.tvPrice.setText("Price: " + decimalFormat.format(room.getPrice()) + " VND/night");
 
         String description = room.getDescription();
         if (description == null || description.trim().isEmpty()) {
@@ -73,6 +79,13 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             holder.tvRating.setText("Rating: N/A");
             holder.tvReviews.setText("(No reviews)");
         }
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, RoomDetailActivity.class);
+            intent.putExtra(RoomDetailActivity.EXTRA_ROOM_ID, room.getRoomId());
+            intent.putExtra(RoomDetailActivity.EXTRA_ROOM_DATA, gson.toJson(room));
+            context.startActivity(intent);
+        });
     }
 
     public void refreshData() {

@@ -1,5 +1,6 @@
 package com.example.hotelmanagement;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -266,7 +267,13 @@ public class RoomDetailActivity extends AppCompatActivity {
     }
 
     private void handleBookRoom() {
-        // Implementation for booking room
+        if (cachedRoomData != null) {
+            Intent intent = new Intent(this, BookingRoomActivity.class);
+            intent.putExtra(BookingRoomActivity.EXTRA_ROOM_DATA, gson.toJson(cachedRoomData));
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "Room data not available", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loadRoomReviews() {

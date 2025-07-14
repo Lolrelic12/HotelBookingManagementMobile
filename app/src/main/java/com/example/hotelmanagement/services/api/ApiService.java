@@ -14,7 +14,8 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
+import java.security.cert.X509Certificate;
+import javax.net.ssl.TrustManager;
 public class ApiService {
     private static ApiService instance;
     private final Retrofit retrofit;
@@ -31,18 +32,32 @@ public class ApiService {
         OkHttpClient client;
 
         try {
-            SSLContext sslContext = SSLCertHelper.getSslContext(context);
-            X509TrustManager trustManager = SSLCertHelper.getTrustManager(context);
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        @Override
+                        public void checkClientTrusted(X509Certificate[] chain, String authType) {}
+
+                        @Override
+                        public void checkServerTrusted(X509Certificate[] chain, String authType) {}
+
+                        @Override
+                        public X509Certificate[] getAcceptedIssuers() {
+                            return new X509Certificate[]{};
+                        }
+                    }
+            };
+
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
 
             client = new OkHttpClient.Builder()
-                    .sslSocketFactory(sslContext.getSocketFactory(), trustManager)
-                    .hostnameVerifier((hostname, session) -> hostname.equals("10.0.2.2"))
+                    .sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) trustAllCerts[0])
+                    .hostnameVerifier((hostname, session) -> true) // THAY ĐỔI: true thay vì check hostname
                     .addInterceptor(authInterceptor)
                     .build();
 
         } catch (Exception e) {
             e.printStackTrace();
-            // Optional fallback or crash
             throw new RuntimeException("Failed to set up SSL", e);
         }
 

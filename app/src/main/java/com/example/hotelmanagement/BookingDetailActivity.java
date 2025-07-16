@@ -217,6 +217,7 @@ public class BookingDetailActivity extends AppCompatActivity {
         Intent intent = new Intent(this, RoomDetailActivity.class);
         intent.putExtra(RoomDetailActivity.EXTRA_ROOM_ID, roomData.getRoomId());
         intent.putExtra(RoomDetailActivity.EXTRA_ROOM_DATA, gson.toJson(roomData));
+        intent.putExtra("booking_success", true);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish();

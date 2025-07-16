@@ -291,4 +291,9 @@ public class RoomListActivity extends AppCompatActivity {
 
         tvPageInfo.setText(String.format("Page %d of %d (%d total rooms)", currentPage, totalPages, filteredRoomList.size()));
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadRooms();
+    }
 }

@@ -11,14 +11,12 @@ public class RoomTypeResponse {
     @SerializedName("description")
     private String description;
 
-    // FIX: Đổi thành String thay vì Date để tránh lỗi parsing
     @SerializedName("createdAt")
     private String createdAt;
 
     @SerializedName("updatedAt")
     private String updatedAt;
 
-    // Constructors
     public RoomTypeResponse() {}
 
     public RoomTypeResponse(String id, String description, String createdAt, String updatedAt) {
@@ -28,7 +26,6 @@ public class RoomTypeResponse {
         this.updatedAt = updatedAt;
     }
 
-    // Getters and Setters
     public String getId() {
         return id;
     }

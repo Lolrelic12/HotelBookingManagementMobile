@@ -35,6 +35,15 @@
         <activity
             android:name=".RoomDetailActivity"
             android:exported="false" />
+        <activity
+            android:name=".BookingRoomActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:parentActivityName=".RoomDetailActivity" />
+
+        <activity
+            android:name=".BookingDetailActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:parentActivityName=".BookingRoomActivity" />
     </application>
 
 </manifest>

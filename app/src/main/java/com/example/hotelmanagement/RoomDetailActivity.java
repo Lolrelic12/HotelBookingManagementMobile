@@ -2,25 +2,20 @@ package com.example.hotelmanagement;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
+import android.graphics.*;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.*;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import com.example.hotelmanagement.adapter.ImageAdapter;
-import com.example.hotelmanagement.adapter.ReviewAdapter;
+import androidx.recyclerview.widget.*;
+import com.example.hotelmanagement.adapter.*;
 import com.example.hotelmanagement.dto.*;
-import com.example.hotelmanagement.services.api.ApiService;
-import com.example.hotelmanagement.services.api.Callback;
-import com.example.hotelmanagement.services.api.TokenManager;
-import com.google.gson.Gson;
-
+import com.example.hotelmanagement.services.api.*;
+import com.google.gson.*;
 import java.text.DecimalFormat;
 import java.util.*;
+
 
 public class RoomDetailActivity extends AppCompatActivity {
 

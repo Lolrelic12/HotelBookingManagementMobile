@@ -69,20 +69,4 @@ public class RoomTypeActivity {
         }
     }
 
-    public boolean isRoomTypeCached(String roomTypeId) {
-        return roomTypeId != null && roomTypeCache.containsKey(roomTypeId.trim());
-    }
-
-    public void clearCache() {
-        roomTypeCache.clear();
-        hasLoadedOnce = false;
-    }
-
-    public boolean hasLoadedOnce() {
-        return hasLoadedOnce;
-    }
-
-    public int getCacheSize() {
-        return roomTypeCache.size();
-    }
 }

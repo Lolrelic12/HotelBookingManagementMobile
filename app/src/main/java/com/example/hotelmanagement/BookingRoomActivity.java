@@ -4,21 +4,14 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import com.example.hotelmanagement.dto.BookingRequest;
-import com.example.hotelmanagement.dto.RoomResponse;
+import com.example.hotelmanagement.dto.*;
 import com.google.gson.Gson;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+import java.text.*;
+import java.util.*;
+
 
 public class BookingRoomActivity extends AppCompatActivity {
     public static final String EXTRA_ROOM_DATA = "room_data";

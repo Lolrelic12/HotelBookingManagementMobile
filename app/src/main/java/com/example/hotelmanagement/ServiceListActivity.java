@@ -19,9 +19,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.hotelmanagement.adapter.ServiceAdapter;
+import com.example.hotelmanagement.dto.RoomResponse;
 import com.example.hotelmanagement.dto.Service.ServiceResponse;
+import com.example.hotelmanagement.services.api.ApiService;
+import com.example.hotelmanagement.services.api.Callback;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ServiceListActivity extends AppCompatActivity {
@@ -30,6 +34,10 @@ public class ServiceListActivity extends AppCompatActivity {
     private TextView tvTotalPrice;
     private double total = 0;
     private Button btnConfirm;
+
+    List<ServiceResponse> serviceItems;
+
+    private ApiService apiService = ApiService.getInstance(this);
     private LinearLayout selectedServiceList;
 
     @Override
@@ -48,8 +56,7 @@ public class ServiceListActivity extends AppCompatActivity {
         tvTotalPrice = findViewById(R.id.tvTotalPrice);
         btnConfirm = findViewById(R.id.btnConfirmOrder);
         selectedServiceList = findViewById(R.id.selectedServiceList);
-
-        List<ServiceResponse> serviceItems = loadMockServices(); // Replace with real API
+        loadMockServices();
         ServiceAdapter adapter = new ServiceAdapter(serviceItems, this::onAddService, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -104,11 +111,29 @@ public class ServiceListActivity extends AppCompatActivity {
     }
 
 
-    private List<ServiceResponse> loadMockServices() {
-        List<ServiceResponse> list = new ArrayList<>();
-        list.add(new ServiceResponse("Laundry", "Fast 1-day laundry", "", 10000, true));
-        list.add(new ServiceResponse("Breakfast", "Continental meal", "", 15000, true));
-        list.add(new ServiceResponse("Massage", "Relaxing massage", "", 25000, false));
-        return list;
+    private void loadMockServices() {
+//        List<ServiceResponse> list = new ArrayList<>();
+//        list.add(new ServiceResponse("Laundry", "Fast 1-day laundry", "", 10000, true));
+//        list.add(new ServiceResponse("Breakfast", "Continental meal", "", 15000, true));
+//        list.add(new ServiceResponse("Massage", "Relaxing massage", "", 25000, false));
+//        return list;
+//        apiService.getAsync("api/Room/GetAll", ServiceResponse[].class, new Callback<ServiceResponse[]>() {
+//            @Override
+//            public void onSuccess(ServiceResponse[] result) {
+//                runOnUiThread(() -> {
+//                    serviceItems.clear();
+//                    if (result != null) {
+//                        Collections.addAll(serviceItems, result);
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable error) {
+//                runOnUiThread(() ->
+//                        Toast.makeText(ServiceListActivity.this, "Failed to load services", Toast.LENGTH_SHORT).show()
+//                );
+//            }
+//        });
     }
 }

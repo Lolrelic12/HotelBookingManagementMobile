@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- item-room -->
+<!-- item_room.xml -->
 
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -46,6 +46,7 @@
             android:textSize="12sp"
             android:textColor="@android:color/darker_gray"
             android:layout_marginTop="4dp" />
+
         <TextView
             android:id="@+id/tvRoomType"
             android:layout_width="match_parent"
@@ -54,6 +55,7 @@
             android:textSize="12sp"
             android:textColor="@android:color/darker_gray"
             android:layout_marginTop="2dp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -87,6 +89,24 @@
             android:layout_marginTop="8dp"
             android:maxLines="2"
             android:ellipsize="end" />
+
+        <!-- Image RecyclerView - Always visible for testing -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Room Images:"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/darker_gray" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewRoomImages"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginTop="4dp"
+            android:background="#f0f0f0"
+            android:visibility="visible" />
 
         <LinearLayout
             android:layout_width="match_parent"

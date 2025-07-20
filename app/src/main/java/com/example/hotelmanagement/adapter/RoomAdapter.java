@@ -8,20 +8,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.hotelmanagement.R;
-import com.example.hotelmanagement.*;
+import com.example.hotelmanagement.RoomDetailActivity;
+import com.example.hotelmanagement.RoomTypeActivity;
+import com.example.hotelmanagement.dto.ImageResponse;
 import com.example.hotelmanagement.dto.RoomResponse;
 import com.google.gson.Gson;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder> {
-    private List<RoomResponse> roomList;
-    private DecimalFormat decimalFormat;
-    private RoomTypeActivity roomTypeService;
+    private final List<RoomResponse> roomList;
+    private final DecimalFormat decimalFormat;
+    private final RoomTypeActivity roomTypeService;
+    private final Gson gson = new Gson();
     private Context context;
-    private Gson gson = new Gson();
+    private List<ImageResponse> imageList = new ArrayList<>();
 
     public RoomAdapter(List<RoomResponse> roomList, RoomTypeActivity roomTypeService) {
         this.roomList = roomList;
@@ -29,11 +34,27 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         this.decimalFormat = new DecimalFormat("#0.00");
     }
 
+    public void setImages(List<ImageResponse> images) {
+        this.imageList = images;
+        notifyDataSetChanged();
+    }
+
+    private List<ImageResponse> getImagesForRoom(String roomId) {
+        List<ImageResponse> roomImages = new ArrayList<>();
+        if (roomId == null || imageList == null) return roomImages;
+        for (ImageResponse image : imageList) {
+            if (roomId.equals(image.getRoomId())) {
+                roomImages.add(image);
+            }
+        }
+        return roomImages;
+    }
+
     @NonNull
     @Override
     public RoomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         this.context = parent.getContext();
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_room, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_room, parent, false);
         return new RoomViewHolder(view);
     }
 
@@ -41,17 +62,10 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     public void onBindViewHolder(@NonNull RoomViewHolder holder, int position) {
         RoomResponse room = roomList.get(position);
 
-        holder.tvRoomNumber.setText("Room: " + (room.getRoomNumber() != null ? room.getRoomNumber() : "N/A"));
-
-        holder.tvRoomId.setText("ID: " + (room.getRoomId() != null ? room.getRoomId() : "N/A"));
-
-        if (room.isAvailable()) {
-            holder.tvAvailability.setText("Available");
-            holder.tvAvailability.setTextColor(Color.parseColor("#4CAF50"));
-        } else {
-            holder.tvAvailability.setText("Unavailable");
-            holder.tvAvailability.setTextColor(Color.parseColor("#F44336"));
-        }
+        holder.tvRoomNumber.setText("Room: " + defaultText(room.getRoomNumber()));
+        holder.tvRoomId.setText("ID: " + defaultText(room.getRoomId()));
+        holder.tvAvailability.setText(room.isAvailable() ? "Available" : "Unavailable");
+        holder.tvAvailability.setTextColor(Color.parseColor(room.isAvailable() ? "#4CAF50" : "#F44336"));
 
         String roomTypeDescription = "Unknown Type";
         if (roomTypeService != null && room.getRoomTypeId() != null) {
@@ -61,16 +75,11 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             }
         }
         holder.tvRoomType.setText("Type: " + roomTypeDescription);
-
         holder.tvCapacity.setText("Capacity: " + room.getCapacity() + " guests");
-
         holder.tvPrice.setText("Price: " + decimalFormat.format(room.getPrice()) + " VND/night");
 
         String description = room.getDescription();
-        if (description == null || description.trim().isEmpty()) {
-            description = "No description available";
-        }
-        holder.tvDescription.setText(description);
+        holder.tvDescription.setText((description == null || description.trim().isEmpty()) ? "No description available" : description);
 
         if (room.getTotalReviews() > 0) {
             holder.tvRating.setText("Rating: " + decimalFormat.format(room.getAverageRating()) + "/5");
@@ -78,6 +87,15 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         } else {
             holder.tvRating.setText("Rating: N/A");
             holder.tvReviews.setText("(No reviews)");
+        }
+
+        List<ImageResponse> roomImages = getImagesForRoom(room.getId());
+        if (!roomImages.isEmpty()) {
+            holder.imageRecyclerView.setVisibility(View.VISIBLE);
+            holder.imageRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+            holder.imageRecyclerView.setAdapter(new ImageAdapter(roomImages, context));
+        } else {
+            holder.imageRecyclerView.setVisibility(View.GONE);
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -88,17 +106,22 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         });
     }
 
-    public void refreshData() {
-        notifyDataSetChanged();
-    }
-
     @Override
     public int getItemCount() {
         return roomList.size();
     }
 
+    public void refreshData() {
+        notifyDataSetChanged();
+    }
+
+    private String defaultText(String text) {
+        return (text != null) ? text : "N/A";
+    }
+
     public static class RoomViewHolder extends RecyclerView.ViewHolder {
         TextView tvRoomNumber, tvRoomId, tvRoomType, tvAvailability, tvCapacity, tvPrice, tvDescription, tvRating, tvReviews;
+        RecyclerView imageRecyclerView;
 
         public RoomViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -111,6 +134,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             tvDescription = itemView.findViewById(R.id.tvDescription);
             tvRating = itemView.findViewById(R.id.tvRating);
             tvReviews = itemView.findViewById(R.id.tvReviews);
+            imageRecyclerView = itemView.findViewById(R.id.recyclerViewRoomImages);
         }
     }
 }

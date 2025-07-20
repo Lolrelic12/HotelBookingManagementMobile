@@ -1,5 +1,6 @@
 package com.example.hotelmanagement;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,13 +11,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.example.hotelmanagement.adapter.ImageAdapter;
 import com.example.hotelmanagement.adapter.ReviewAdapter;
 import com.example.hotelmanagement.dto.*;
 import com.example.hotelmanagement.services.api.ApiService;
 import com.example.hotelmanagement.services.api.Callback;
 import com.example.hotelmanagement.services.api.TokenManager;
 import com.google.gson.Gson;
-import android.app.AlertDialog;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -31,40 +32,48 @@ public class RoomDetailActivity extends AppCompatActivity {
     private Gson gson = new Gson();
 
     private String roomId, roomGuid;
+    private boolean hasBookedRoom = false;
     private RoomResponse cachedRoomData;
+
     private DecimalFormat priceFormat = new DecimalFormat("0.00 VND");
     private DecimalFormat ratingFormat = new DecimalFormat("#0.00");
-    private Button btnWriteReview;
-    private boolean hasBookedRoom = false;
 
-    private TextView tvRoomNumber, tvRoomId, tvRoomType, tvAvailability, tvCapacity, tvPrice, tvDescription, tvRating, tvReviews, tvNoReviews;
-    private Button btnBookRoom;
-    private RecyclerView rvReviews;
-    private ReviewAdapter reviewAdapter;
+    private List<ImageResponse> roomImages = new ArrayList<>();
     private List<ReviewReponse> reviewList = new ArrayList<>();
+
+    private ImageAdapter imageAdapter;
+    private ReviewAdapter reviewAdapter;
+
+    private TextView tvRoomNumber, tvRoomId, tvRoomType, tvAvailability, tvCapacity, tvPrice,
+            tvDescription, tvRating, tvReviews, tvNoReviews;
+    private Button btnBookRoom, btnWriteReview;
+    private RecyclerView rvRoomImages, rvReviews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_detail);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Room Details");
-
+        setupToolbar();
         roomId = getIntent().getStringExtra(EXTRA_ROOM_ID);
         if (roomId == null) {
-            Toast.makeText(this, "Room ID not provided", Toast.LENGTH_SHORT).show();
+            showToast("Room ID not provided");
             finish();
             return;
         }
 
         initViews();
         setupServices();
-        setupRecyclerView();
+        setupRecyclerViews();
         loadRoomData();
         checkBookingSuccess();
+    }
+
+    private void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Room Details");
     }
 
     private void initViews() {
@@ -79,12 +88,13 @@ public class RoomDetailActivity extends AppCompatActivity {
         tvReviews = findViewById(R.id.tvReviews);
         tvNoReviews = findViewById(R.id.tvNoReviews);
         btnBookRoom = findViewById(R.id.btnBookRoom);
-        rvReviews = findViewById(R.id.rvReviews);
         btnWriteReview = findViewById(R.id.btnWriteReview);
-
         btnWriteReview.setVisibility(View.VISIBLE);
-        btnWriteReview.setOnClickListener(v -> handleWriteReview());
+        rvRoomImages = findViewById(R.id.rvRoomImages);
+        rvReviews = findViewById(R.id.rvReviews);
+
         btnBookRoom.setOnClickListener(v -> handleBookRoom());
+        btnWriteReview.setOnClickListener(v -> handleWriteReview());
     }
 
     private void setupServices() {
@@ -92,7 +102,11 @@ public class RoomDetailActivity extends AppCompatActivity {
         roomTypeService = new RoomTypeActivity(this);
     }
 
-    private void setupRecyclerView() {
+    private void setupRecyclerViews() {
+        imageAdapter = new ImageAdapter(roomImages, this);
+        rvRoomImages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        rvRoomImages.setAdapter(imageAdapter);
+
         reviewAdapter = new ReviewAdapter(reviewList);
         rvReviews.setLayoutManager(new LinearLayoutManager(this));
         rvReviews.setAdapter(reviewAdapter);
@@ -117,39 +131,28 @@ public class RoomDetailActivity extends AppCompatActivity {
         roomTypeService.getAllRoomTypes(new Callback<RoomTypeResponse[]>() {
             @Override
             public void onSuccess(RoomTypeResponse[] result) {
-                runOnUiThread(() -> {
-                    if (cachedRoomData != null) updateRoomTypeDisplay(cachedRoomData);
+                runOnUi(() -> {
+                    if (cachedRoomData != null)
+                        updateRoomTypeDisplay(cachedRoomData);
                 });
             }
-
-            @Override
             public void onFailure(Throwable error) {
-                runOnUiThread(() ->
-                        Toast.makeText(RoomDetailActivity.this, "Failed to load room types", Toast.LENGTH_SHORT).show()
-                );
+                runOnUi(() -> showToast("Failed to load room types"));
             }
         });
     }
 
     private void loadRoomDetails() {
         roomTypeService.getAllRoomTypes(new Callback<RoomTypeResponse[]>() {
-            @Override
-            public void onSuccess(RoomTypeResponse[] result) {
-                runOnUiThread(RoomDetailActivity.this::fetchRoomDetails);
-            }
-
-            @Override
-            public void onFailure(Throwable error) {
-                runOnUiThread(RoomDetailActivity.this::fetchRoomDetails);
-            }
+            public void onSuccess(RoomTypeResponse[] result) { runOnUi(RoomDetailActivity.this::fetchRoomDetails); }
+            public void onFailure(Throwable error) { runOnUi(RoomDetailActivity.this::fetchRoomDetails); }
         });
     }
 
     private void fetchRoomDetails() {
         apiService.getAsync("api/Room/GetByRoomId/" + roomId, RoomResponse.class, new Callback<RoomResponse>() {
-            @Override
             public void onSuccess(RoomResponse result) {
-                runOnUiThread(() -> {
+                runOnUi(() -> {
                     if (result != null) {
                         roomGuid = result.getId();
                         cachedRoomData = result;
@@ -157,16 +160,14 @@ public class RoomDetailActivity extends AppCompatActivity {
                         displayRoomDetails(result);
                         loadRoomReviews();
                     } else {
-                        Toast.makeText(RoomDetailActivity.this, "Room not found", Toast.LENGTH_SHORT).show();
+                        showToast("Room not found");
                         finish();
                     }
                 });
             }
-
-            @Override
             public void onFailure(Throwable error) {
-                runOnUiThread(() -> {
-                    Toast.makeText(RoomDetailActivity.this, "Failed to load room details", Toast.LENGTH_SHORT).show();
+                runOnUi(() -> {
+                    showToast("Failed to load room details");
                     finish();
                 });
             }
@@ -174,11 +175,11 @@ public class RoomDetailActivity extends AppCompatActivity {
     }
 
     private void displayRoomDetails(RoomResponse room) {
-        tvRoomNumber.setText(defaultText(room.getRoomNumber()));
-        tvRoomId.setText(defaultText(room.getRoomId()));
+        tvRoomNumber.setText(textOrDefault(room.getRoomNumber()));
+        tvRoomId.setText(textOrDefault(room.getRoomId()));
         tvCapacity.setText(room.getCapacity() + " guests");
         tvPrice.setText(priceFormat.format(room.getPrice()) + "/night");
-        tvDescription.setText(defaultText(room.getDescription(), "No description available"));
+        tvDescription.setText(textOrDefault(room.getDescription(), "No description available"));
         tvRating.setText(room.getTotalReviews() > 0 ? ratingFormat.format(room.getAverageRating()) + "/5" : "N/A");
         tvReviews.setText(room.getTotalReviews() > 0 ? room.getTotalReviews() + " reviews" : "No reviews");
 
@@ -187,11 +188,80 @@ public class RoomDetailActivity extends AppCompatActivity {
         btnBookRoom.setEnabled(room.isAvailable());
 
         updateRoomTypeDisplay(room);
+        loadRoomImages();
     }
 
     private void updateRoomTypeDisplay(RoomResponse room) {
-        String description = roomTypeService.getRoomTypeDescription(room.getRoomTypeId());
-        tvRoomType.setText(defaultText(description, "Unknown Type"));
+        String desc = roomTypeService.getRoomTypeDescription(room.getRoomTypeId());
+        tvRoomType.setText(textOrDefault(desc, "Unknown Type"));
+    }
+
+    private void loadRoomImages() {
+        if (roomGuid == null) {
+            hideRoomImages();
+            return;
+        }
+
+        apiService.getAsync("api/Image/GetImagesByRoomId/" + roomGuid, ImageResponse[].class, new Callback<>() {
+            public void onSuccess(ImageResponse[] result) {
+                runOnUi(() -> {
+                    roomImages.clear();
+                    if (result != null && result.length > 0) {
+                        roomImages.addAll(Arrays.asList(result));
+                        imageAdapter.notifyDataSetChanged();
+                        rvRoomImages.setVisibility(View.VISIBLE);
+                    } else hideRoomImages();
+                });
+            }
+
+            public void onFailure(Throwable error) {
+                runOnUi(() -> {
+                    showToast("Failed to load room images");
+                    hideRoomImages();
+                });
+            }
+        });
+    }
+
+    private void hideRoomImages() {
+        roomImages.clear();
+        imageAdapter.notifyDataSetChanged();
+        rvRoomImages.setVisibility(View.GONE);
+    }
+
+    private void loadRoomReviews() {
+        if (roomGuid == null) {
+            hideRoomReviews();
+            return;
+        }
+
+        apiService.getAsync("api/Review/GetByRoomId/" + roomGuid, ReviewReponse[].class, new Callback<>() {
+            public void onSuccess(ReviewReponse[] result) {
+                runOnUi(() -> {
+                    reviewList.clear();
+                    if (result != null && result.length > 0) {
+                        reviewList.addAll(Arrays.asList(result));
+                        reviewAdapter.notifyDataSetChanged();
+                        rvReviews.setVisibility(View.VISIBLE);
+                        tvNoReviews.setVisibility(View.GONE);
+                    } else hideRoomReviews();
+                });
+            }
+
+            public void onFailure(Throwable error) {
+                runOnUi(() -> {
+                    showToast("Failed to load reviews");
+                    hideRoomReviews();
+                });
+            }
+        });
+    }
+
+    private void hideRoomReviews() {
+        reviewList.clear();
+        reviewAdapter.notifyDataSetChanged();
+        rvReviews.setVisibility(View.GONE);
+        tvNoReviews.setVisibility(View.VISIBLE);
     }
 
     private void handleBookRoom() {
@@ -200,96 +270,16 @@ public class RoomDetailActivity extends AppCompatActivity {
             intent.putExtra(BookingRoomActivity.EXTRA_ROOM_DATA, gson.toJson(cachedRoomData));
             startActivity(intent);
         } else {
-            Toast.makeText(this, "Room data not available", Toast.LENGTH_SHORT).show();
+            showToast("Room data not available");
         }
-    }
-
-    private void loadRoomReviews() {
-        if (roomGuid == null) {
-            showNoReviews();
-            return;
-        }
-
-        apiService.getAsync("api/Review/GetByRoomId/" + roomGuid, ReviewReponse[].class, new Callback<ReviewReponse[]>() {
-            @Override
-            public void onSuccess(ReviewReponse[] result) {
-                runOnUiThread(() -> {
-                    reviewList.clear();
-                    if (result != null && result.length > 0) {
-                        reviewList.addAll(Arrays.asList(result));
-                        reviewAdapter.notifyDataSetChanged();
-                        rvReviews.setVisibility(View.VISIBLE);
-                        tvNoReviews.setVisibility(View.GONE);
-                    } else {
-                        showNoReviews();
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(Throwable error) {
-                runOnUiThread(() -> {
-                    Toast.makeText(RoomDetailActivity.this, "Failed to load reviews", Toast.LENGTH_SHORT).show();
-                    showNoReviews();
-                });
-            }
-        });
-    }
-
-    private void showNoReviews() {
-        reviewList.clear();
-        reviewAdapter.notifyDataSetChanged();
-        rvReviews.setVisibility(View.GONE);
-        tvNoReviews.setVisibility(View.VISIBLE);
-    }
-
-    private String defaultText(String input) {
-        return input != null ? input : "N/A";
-    }
-
-    private String defaultText(String input, String fallback) {
-        return (input == null || input.trim().isEmpty()) ? fallback : input;
-    }
-
-    private void checkBookingSuccess() {
-        boolean bookingSuccess = getIntent().getBooleanExtra("booking_success", false);
-        if (bookingSuccess) {
-            hasBookedRoom = true;
-            Toast.makeText(this, "Booking successful! You can now write a review.", Toast.LENGTH_LONG).show();
-            loadRoomDetails();
-            checkUserBookingStatus();
-        } else {
-            checkUserBookingStatus();
-        }
-    }
-
-    private void checkUserBookingStatus() {
-        if (roomGuid == null || hasBookedRoom) return;
-
-        String userId = "26A2DA04-D00F-41CB-8783-17FCF11F099C";
-        String url = "api/Booking/GetAll?filterBy=UserId&searchTerm=" + userId;
-
-        apiService.getAsync(url, BookingResponse[].class, new Callback<BookingResponse[]>() {
-            @Override
-            public void onSuccess(BookingResponse[] result) {
-                runOnUiThread(() -> {
-                    hasBookedRoom = result != null && Arrays.stream(result).anyMatch(b -> roomGuid.equals(b.getRoomId()));
-                });
-            }
-
-            @Override
-            public void onFailure(Throwable error) {
-                runOnUiThread(() -> hasBookedRoom = false);
-            }
-        });
     }
 
     private void handleWriteReview() {
         if (!hasBookedRoom) {
             new AlertDialog.Builder(this)
                     .setTitle("Booking Required")
-                    .setMessage("You need to book this room first before writing a review. Would you like to book now?")
-                    .setPositiveButton("Book Now", (dialog, which) -> handleBookRoom())
+                    .setMessage("You need to book this room before writing a review.")
+                    .setPositiveButton("Book Now", (d, w) -> handleBookRoom())
                     .setNegativeButton("Cancel", null)
                     .show();
         } else {
@@ -299,30 +289,25 @@ public class RoomDetailActivity extends AppCompatActivity {
 
     private void showCreateReviewDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_create_review, null);
-        builder.setView(dialogView);
+        View view = getLayoutInflater().inflate(R.layout.dialog_create_review, null);
+        builder.setView(view);
         AlertDialog dialog = builder.create();
 
-        RatingBar ratingBar = dialogView.findViewById(R.id.ratingBar);
-        TextView tvRatingValue = dialogView.findViewById(R.id.tvRatingValue);
-        EditText etReviewContent = dialogView.findViewById(R.id.etReviewContent);
-        Button btnCancel = dialogView.findViewById(R.id.btnCancel);
-        Button btnSubmitReview = dialogView.findViewById(R.id.btnSubmitReview);
+        RatingBar ratingBar = view.findViewById(R.id.ratingBar);
+        EditText etContent = view.findViewById(R.id.etReviewContent);
+        TextView tvValue = view.findViewById(R.id.tvRatingValue);
+        Button btnSubmit = view.findViewById(R.id.btnSubmitReview), btnCancel = view.findViewById(R.id.btnCancel);
 
-        ratingBar.setOnRatingBarChangeListener((bar, rating, fromUser) ->
-                tvRatingValue.setText(String.format("%.1f", rating)));
-
+        ratingBar.setOnRatingBarChangeListener((bar, rating, fromUser) -> tvValue.setText(String.format("%.1f", rating)));
         btnCancel.setOnClickListener(v -> dialog.dismiss());
 
-        btnSubmitReview.setOnClickListener(v -> {
-            String content = etReviewContent.getText().toString().trim();
+        btnSubmit.setOnClickListener(v -> {
+            String content = etContent.getText().toString().trim();
             float rating = ratingBar.getRating();
 
-            if (content.isEmpty()) {
-                etReviewContent.setError("Please enter your review");
-            } else if (rating == 0) {
-                Toast.makeText(this, "Please provide a rating", Toast.LENGTH_SHORT).show();
-            } else {
+            if (content.isEmpty()) etContent.setError("Enter review");
+            else if (rating == 0) showToast("Please provide a rating");
+            else {
                 submitReview(content, rating);
                 dialog.dismiss();
             }
@@ -333,45 +318,74 @@ public class RoomDetailActivity extends AppCompatActivity {
 
     private void submitReview(String content, double rating) {
         if (roomGuid == null) {
-            Toast.makeText(this, "Room data not available", Toast.LENGTH_SHORT).show();
+            showToast("Room data not available");
             return;
         }
 
         TokenManager tokenManager = new TokenManager(this);
-        String token = tokenManager.getToken();
-        if (token == null || token.isEmpty()) {
-            Toast.makeText(this, "Please login first", Toast.LENGTH_SHORT).show();
+        if (tokenManager.getToken() == null) {
+            showToast("Please login first");
             return;
         }
 
-        ReviewRequest reviewRequest = new ReviewRequest(UUID.fromString(roomGuid), content, rating);
-
-        apiService.postAsync("api/Review/Create", reviewRequest, Object.class, new Callback<Object>() {
-            @Override
-            public void onSuccess(Object result) {
-                runOnUiThread(() -> {
-                    Toast.makeText(RoomDetailActivity.this, "Review submitted successfully!", Toast.LENGTH_LONG).show();
+        ReviewRequest request = new ReviewRequest(UUID.fromString(roomGuid), content, rating);
+        apiService.postAsync("api/Review/Create", request, Object.class, new Callback<>() {
+            public void onSuccess(Object res) {
+                runOnUi(() -> {
+                    showToast("Review submitted!");
                     loadRoomReviews();
                     loadRoomDetails();
                 });
             }
 
-            @Override
-            public void onFailure(Throwable error) {
-                runOnUiThread(() -> {
-                    String errorMessage = error.getMessage();
-                    if (errorMessage != null && errorMessage.contains("401")) {
-                        Toast.makeText(RoomDetailActivity.this, "Authentication failed. Please login again.", Toast.LENGTH_LONG).show();
+            public void onFailure(Throwable err) {
+                runOnUi(() -> {
+                    if (err.getMessage() != null && err.getMessage().contains("401")) {
                         tokenManager.clearToken();
-                        Intent intent = new Intent(RoomDetailActivity.this, LoginActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
+                        startActivity(new Intent(RoomDetailActivity.this, LoginActivity.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     } else {
-                        Toast.makeText(RoomDetailActivity.this, "Failed to submit review", Toast.LENGTH_LONG).show();
+                        showToast("Failed to submit review");
                     }
                 });
             }
         });
+    }
+
+    private void checkBookingSuccess() {
+        if (getIntent().getBooleanExtra("booking_success", false)) {
+            hasBookedRoom = true;
+            showToast("Booking successful! You can now write a review.");
+            loadRoomDetails();
+        }
+        checkUserBookingStatus();
+    }
+
+    private void checkUserBookingStatus() {
+        if (roomGuid == null || hasBookedRoom) return;
+
+        String userId = "26A2DA04-D00F-41CB-8783-17FCF11F099C";
+        String url = "api/Booking/GetAll?filterBy=UserId&searchTerm=" + userId;
+
+        apiService.getAsync(url, BookingResponse[].class, new Callback<>() {
+            public void onSuccess(BookingResponse[] result) {
+                runOnUi(() -> {
+                    hasBookedRoom = result != null && Arrays.stream(result).anyMatch(b -> roomGuid.equals(b.getRoomId()));
+                });
+            }
+
+            public void onFailure(Throwable error) {
+                runOnUi(() -> hasBookedRoom = false);
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (cachedRoomData != null) {
+            loadRoomDetails();
+        }
     }
 
     @Override
@@ -382,11 +396,20 @@ public class RoomDetailActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (cachedRoomData != null) {
-            loadRoomDetails();
-        }
+
+    private void showToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private void runOnUi(Runnable r) {
+        runOnUiThread(r);
+    }
+
+    private String textOrDefault(String value) {
+        return value != null && !value.trim().isEmpty() ? value : "N/A";
+    }
+
+    private String textOrDefault(String value, String fallback) {
+        return value != null && !value.trim().isEmpty() ? value : fallback;
     }
 }

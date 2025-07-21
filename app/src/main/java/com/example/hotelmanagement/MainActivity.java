@@ -69,11 +69,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-//        registerButton.setOnClickListener(v -> {
-//            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
-//            startActivity(intent);
-//        });
-//
+        registerButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+            startActivity(intent);
+        });
+
         viewRoomsButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, RoomListActivity.class);
             startActivity(intent);

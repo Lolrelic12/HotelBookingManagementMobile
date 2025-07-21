@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" >
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -16,19 +16,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HotelManagement"
         android:usesCleartextTraffic="false"
-        tools:targetApi="31" >
+        tools:targetApi="31">
+        <activity
+            android:name=".BaseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UserProfileActivity"
+            android:exported="false" />
         <activity
             android:name=".ServiceDetailActivity"
             android:exported="false" />
         <activity
             android:name=".ServiceListActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".RoomListActivity"
             android:exported="true" />
@@ -37,7 +37,13 @@
             android:exported="true" />
         <activity
             android:name=".LoginActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".RoomDetailActivity"
             android:exported="false" />

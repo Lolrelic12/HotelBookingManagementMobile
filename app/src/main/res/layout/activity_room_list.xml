@@ -163,5 +163,8 @@
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
-
+    <include
+        android:id="@+id/footer"
+        layout="@layout/footer_navigation"/>
 </LinearLayout>
+

@@ -73,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         String savedToken = tm.getToken();
 
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, RoomListActivity.class);
                         startActivity(intent);
                         finish();
                     }

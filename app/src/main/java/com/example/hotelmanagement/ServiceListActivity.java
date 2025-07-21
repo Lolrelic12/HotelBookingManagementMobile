@@ -37,7 +37,7 @@ public class ServiceListActivity extends AppCompatActivity {
 
     List<ServiceResponse> serviceItems;
 
-    private ApiService apiService = ApiService.getInstance(this);
+    private ApiService apiService;
     private LinearLayout selectedServiceList;
 
     @Override
@@ -45,7 +45,7 @@ public class ServiceListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_service_list);
-
+        ApiService.getInstance(this);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.mainLayout), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -112,11 +112,11 @@ public class ServiceListActivity extends AppCompatActivity {
 
 
     private void loadMockServices() {
-//        List<ServiceResponse> list = new ArrayList<>();
-//        list.add(new ServiceResponse("Laundry", "Fast 1-day laundry", "", 10000, true));
-//        list.add(new ServiceResponse("Breakfast", "Continental meal", "", 15000, true));
-//        list.add(new ServiceResponse("Massage", "Relaxing massage", "", 25000, false));
-//        return list;
+        List<ServiceResponse> list = new ArrayList<>();
+        list.add(new ServiceResponse("Laundry", "Fast 1-day laundry", "", 10000, true));
+        list.add(new ServiceResponse("Breakfast", "Continental meal", "", 15000, true));
+        list.add(new ServiceResponse("Massage", "Relaxing massage", "", 25000, false));
+        serviceItems = list;
 //        apiService.getAsync("api/Room/GetAll", ServiceResponse[].class, new Callback<ServiceResponse[]>() {
 //            @Override
 //            public void onSuccess(ServiceResponse[] result) {

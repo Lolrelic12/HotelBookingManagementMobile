@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName;
 public class BookedRoomResponse {
     @SerializedName("id")
     private String bookingId;
+    @SerializedName("roomId")
+    private String roomId;
     @SerializedName("roomNumber")
     private String roomNumber;
     @SerializedName("checkInDate")
@@ -21,8 +23,9 @@ public class BookedRoomResponse {
     public BookedRoomResponse() {
     }
 
-    public BookedRoomResponse(String bookingId, String roomNumber, String checkInDate, String checkOutDate, double totalPrice, int bookingStatus, String createdAt) {
+    public BookedRoomResponse(String bookingId, String roomId, String roomNumber, String checkInDate, String checkOutDate, double totalPrice, int bookingStatus, String createdAt) {
         this.bookingId = bookingId;
+        this.roomId = roomId;
         this.roomNumber = roomNumber;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
@@ -33,6 +36,14 @@ public class BookedRoomResponse {
 
     public String getBookingId() {
         return bookingId;
+    }
+
+    public String getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
     }
 
     public void setBookingId(String bookingId) {

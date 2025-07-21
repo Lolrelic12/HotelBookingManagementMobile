@@ -15,21 +15,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hotelmanagement.R;
 import com.example.hotelmanagement.ServiceDetailActivity;
+import com.example.hotelmanagement.dto.Service.Service;
 import com.example.hotelmanagement.dto.Service.ServiceResponse;
+import com.example.hotelmanagement.dto.Service.ServicesInRoomResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ServiceViewHolder> {
 
-    private List<ServiceResponse> services;
+    private ServicesInRoomResponse services;
+
+    private ArrayList<Service> list = new ArrayList<>();
     private final OnAddClickListener listener;
     private final Context context;
 
     public interface OnAddClickListener {
-        void onAddClick(ServiceResponse item);
+        void onAddClick(Service item);
     }
 
-    public ServiceAdapter(List<ServiceResponse> services, OnAddClickListener listener, Context context) {
+    public ServiceAdapter(ServicesInRoomResponse services, OnAddClickListener listener, Context context) {
         this.services = services;
         this.listener = listener;
         this.context = context;
@@ -38,17 +43,18 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ServiceV
     @NonNull
     @Override
     public ServiceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        list = services.getServices();
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_service_card, parent, false);
         return new ServiceViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ServiceViewHolder holder, int position) {
-        ServiceResponse item = services.get(position);
-        holder.tvName.setText(item.name);
-        holder.tvPrice.setText(String.format("Price: VND %.2f", item.price));
-        holder.tvStatus.setText(item.available ? "Status: Available" : "Status: Unavailable");
-        holder.tvStatus.setTextColor(item.available ? Color.GREEN : Color.RED);
+        Service item = list.get(position);
+        holder.tvName.setText(item.getName());
+        holder.tvPrice.setText(String.format("Price: VND %.2f", item.getPrice()));
+        holder.tvStatus.setText(item.isAvailable() ? "Status: Available" : "Status: Unavailable");
+        holder.tvStatus.setTextColor(item.isAvailable() ? Color.GREEN : Color.RED);
         holder.btnAdd.setOnClickListener(v -> listener.onAddClick(item));
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ServiceDetailActivity.class);
@@ -63,7 +69,7 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ServiceV
 
     @Override
     public int getItemCount() {
-        return services.size();
+        return list.size();
     }
 
     public static class ServiceViewHolder extends RecyclerView.ViewHolder {
@@ -79,5 +85,10 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ServiceV
             img = itemView.findViewById(R.id.imgService);
             btnAdd = itemView.findViewById(R.id.btnAddService);
         }
+    }
+    public void updateData(ServicesInRoomResponse newServices) {
+        this.services = newServices;
+        this.list = newServices.getServices();
+        notifyDataSetChanged();
     }
 }

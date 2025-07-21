@@ -20,7 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.hotelmanagement.adapter.ServiceAdapter;
 import com.example.hotelmanagement.dto.RoomResponse;
+import com.example.hotelmanagement.dto.Service.Service;
+import com.example.hotelmanagement.dto.Service.ServiceInRoomWrapper;
 import com.example.hotelmanagement.dto.Service.ServiceResponse;
+import com.example.hotelmanagement.dto.Service.ServicesInRoomResponse;
 import com.example.hotelmanagement.services.api.ApiService;
 import com.example.hotelmanagement.services.api.Callback;
 
@@ -34,8 +37,8 @@ public class ServiceListActivity extends AppCompatActivity {
     private TextView tvTotalPrice;
     private double total = 0;
     private Button btnConfirm;
-
-    List<ServiceResponse> serviceItems;
+    ServiceAdapter adapter;
+    ServicesInRoomResponse serviceItems = new ServicesInRoomResponse();
 
     private ApiService apiService;
     private LinearLayout selectedServiceList;
@@ -45,7 +48,7 @@ public class ServiceListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_service_list);
-        ApiService.getInstance(this);
+        apiService = ApiService.getInstance(this);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.mainLayout), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -57,12 +60,12 @@ public class ServiceListActivity extends AppCompatActivity {
         btnConfirm = findViewById(R.id.btnConfirmOrder);
         selectedServiceList = findViewById(R.id.selectedServiceList);
         loadMockServices();
-        ServiceAdapter adapter = new ServiceAdapter(serviceItems, this::onAddService, this);
+        adapter = new ServiceAdapter(serviceItems, this::onAddService, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
     }
 
-    private void onAddService(ServiceResponse item) {
+    private void onAddService(Service item) {
         // Skip if the service is unavailable
         if (!item.isAvailable()) {
             Toast.makeText(this, "This service is unavailable.", Toast.LENGTH_SHORT).show();
@@ -72,7 +75,7 @@ public class ServiceListActivity extends AppCompatActivity {
         // Prevent duplicate service being added
         for (int i = 0; i < selectedServiceList.getChildCount(); i++) {
             TextView existingName = selectedServiceList.getChildAt(i).findViewById(R.id.tvSelectedServiceName);
-            if (existingName != null && existingName.getText().toString().startsWith(item.name)) {
+            if (existingName != null && existingName.getText().toString().startsWith(item.getName())) {
                 Toast.makeText(this, "Service already added.", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -86,11 +89,11 @@ public class ServiceListActivity extends AppCompatActivity {
         ImageView img = view.findViewById(R.id.imgSelectedService);
         Button btnRemove = view.findViewById(R.id.btnRemove);
 
-        tvName.setText(item.name + " - VND " + item.price);
+        tvName.setText(item.getName() + " - VND " + item.getPrice());
 
-        if (item.imageUrl != null && !item.imageUrl.isEmpty()) {
+        if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
             Glide.with(this)
-                    .load(item.imageUrl)
+                    .load(item.getImageUrl())
                     .placeholder(R.drawable.ic_placeholder)
                     .into(img);
         } else {
@@ -100,40 +103,38 @@ public class ServiceListActivity extends AppCompatActivity {
         // Handle remove
         btnRemove.setOnClickListener(v -> {
             selectedServiceList.removeView(view);
-            total -= item.price;
+            total -= item.getPrice();
             if (total < 0) total = 0;
             tvTotalPrice.setText(String.format("VND %.2f", total));
         });
 
         selectedServiceList.addView(view);
-        total += item.price;
+        total += item.getPrice();
         tvTotalPrice.setText(String.format("VND %.2f", total));
     }
 
 
     private void loadMockServices() {
-        List<ServiceResponse> list = new ArrayList<>();
-        list.add(new ServiceResponse("Laundry", "Fast 1-day laundry", "", 10000, true));
-        list.add(new ServiceResponse("Breakfast", "Continental meal", "", 15000, true));
-        list.add(new ServiceResponse("Massage", "Relaxing massage", "", 25000, false));
-        serviceItems = list;
-//        apiService.getAsync("api/Room/GetAll", ServiceResponse[].class, new Callback<ServiceResponse[]>() {
-//            @Override
-//            public void onSuccess(ServiceResponse[] result) {
-//                runOnUiThread(() -> {
-//                    serviceItems.clear();
-//                    if (result != null) {
-//                        Collections.addAll(serviceItems, result);
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable error) {
-//                runOnUiThread(() ->
-//                        Toast.makeText(ServiceListActivity.this, "Failed to load services", Toast.LENGTH_SHORT).show()
-//                );
-//            }
-//        });
+        String roomId = getIntent().getStringExtra("roomId");
+        String bookingId = getIntent().getStringExtra("bookingId");
+        apiService.getAsync("api/Service/GetServicesByRoomId?roomId=" + roomId, ServiceInRoomWrapper.class, new Callback<ServiceInRoomWrapper>() {
+            @Override
+            public void onSuccess(ServiceInRoomWrapper result) {
+                runOnUiThread(() -> {
+                    if (result != null) {
+                        serviceItems = result.getValue();
+                        serviceItems = result.getValue();
+                        adapter.updateData(serviceItems);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                runOnUiThread(() ->
+                        Toast.makeText(ServiceListActivity.this, "Failed to load services", Toast.LENGTH_SHORT).show()
+                );
+            }
+        });
     }
 }

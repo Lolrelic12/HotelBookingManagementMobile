@@ -50,11 +50,20 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
         holder.roomName.setText(booking.getRoomNumber());
         holder.date.setText(booking.getCheckInDate());
         holder.status.setText(getBookingStatus(booking.getBookingStatus()));
-        holder.orderServiceBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(context, ServiceListActivity.class);
-            intent.putExtra("bookingId", booking.getBookingId()); // If needed
-            context.startActivity(intent);
-        });
+        if (booking.getBookingStatus() != 3) {
+            holder.orderServiceBtn.setEnabled(false);
+            holder.orderServiceBtn.setAlpha(0.5f);
+        } else {
+            holder.orderServiceBtn.setEnabled(true);
+            holder.orderServiceBtn.setAlpha(1f);
+            holder.orderServiceBtn.setOnClickListener(v -> {
+                Intent intent = new Intent(context, ServiceListActivity.class);
+                intent.putExtra("bookingId", booking.getBookingId());
+                intent.putExtra("roomId", booking.getRoomId());
+                context.startActivity(intent);
+            });
+        }
+
     }
 
     @Override

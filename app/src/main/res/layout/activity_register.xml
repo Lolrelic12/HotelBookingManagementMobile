@@ -1,48 +1,214 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp">
+    android:fillViewport="true"
+    android:background="#F8F9FA">
 
-    <EditText
-        android:id="@+id/usernameField"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Username"
-        android:inputType="text" />
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:gravity="center">
 
-    <EditText
-        android:id="@+id/emailField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Email"
-        android:inputType="text" />
+        <!-- Header Section -->
+        <TextView
+            android:id="@+id/appTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hotel"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#1565C0"
+            android:layout_marginBottom="8dp" />
 
-    <EditText
-        android:id="@+id/passwordField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Password"
-        android:inputType="textPassword" />
+        <TextView
+            android:id="@+id/subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create your account to start booking"
+            android:textSize="16sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="32dp"
+            android:textAlignment="center" />
 
-    <EditText
-        android:id="@+id/confirmPasswordField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Confirm password"
-        android:inputType="textPassword" />
+        <!-- Registration Form -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#FFFFFF"
+            android:elevation="4dp"
+            android:padding="24dp"
+            android:layout_marginBottom="24dp">
 
-    <Button
-        android:id="@+id/registerButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Register" />
+            <!-- Username Field -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Username"
+                android:textSize="14sp"
+                android:textColor="#333333"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
 
-    <TextView
-        android:id="@+id/resultText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:paddingTop="16dp" />
-</LinearLayout>
+            <EditText
+                android:id="@+id/usernameField"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Username"
+                android:inputType="text"
+                android:background="#F5F5F5"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Email Field -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email Address"
+                android:textSize="14sp"
+                android:textColor="#333333"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/emailField"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:background="#F5F5F5"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Password Field -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Password"
+                android:textSize="14sp"
+                android:textColor="#333333"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/passwordField"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:background="#F5F5F5"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Confirm Password Field -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirm Password"
+                android:textSize="14sp"
+                android:textColor="#333333"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/confirmPasswordField"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Confirm password"
+                android:inputType="textPassword"
+                android:background="#F5F5F5"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Terms and Conditions -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp">
+
+                <CheckBox
+                    android:id="@+id/termsCheckbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="I agree to the Terms of Service and Privacy Policy"
+                    android:textSize="13sp"
+                    android:textColor="#666666" />
+
+            </LinearLayout>
+
+            <!-- Register Button -->
+            <Button
+                android:id="@+id/registerButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Register"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:background="#2196F3"
+                android:elevation="2dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Social Registration Divider -->
+
+            <!-- Google Register Button -->
+
+        </LinearLayout>
+
+        <!-- Login Link -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Already have an account? "
+                android:textSize="14sp"
+                android:textColor="#666666" />
+
+            <TextView
+                android:id="@+id/loginText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign In"
+                android:textSize="14sp"
+                android:textColor="#2196F3"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp" />
+
+        </LinearLayout>
+
+        <!-- Error/Success Message -->
+        <TextView
+            android:id="@+id/resultText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAlignment="center"
+            android:textSize="14sp"
+            android:paddingTop="16dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</ScrollView>

@@ -1,5 +1,7 @@
 package com.example.hotelmanagement.dto.Service;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 public class Service {
@@ -13,6 +15,7 @@ public class Service {
     private double price;
     @SerializedName("isAvailable")
     private boolean isAvailable;
+    @Nullable
     @SerializedName("imageUrl")
     private String imageUrl;
 

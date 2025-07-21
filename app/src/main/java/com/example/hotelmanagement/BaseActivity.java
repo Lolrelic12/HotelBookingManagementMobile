@@ -12,6 +12,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected LinearLayout navRoom;
     protected LinearLayout navUser;
+    protected LinearLayout navService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -21,6 +22,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void setupFooterNavigation() {
         navRoom = findViewById(R.id.navRoom);
         navUser = findViewById(R.id.navUser);
+        navService = findViewById(R.id.navService);
 
         if (navRoom != null) {
             navRoom.setOnClickListener(v -> {
@@ -37,6 +39,13 @@ public abstract class BaseActivity extends AppCompatActivity {
                 }
             });
         }
+        if (navService != null) {
+            navService.setOnClickListener(v -> {
+                if (!(this instanceof UserProfileActivity)) {
+                    startActivity(new Intent(this, UserOrdersActivity.class));
+                }
+            });
+        }
     }
 
     protected void highlightFooterIcon(int iconResId) {
@@ -44,6 +53,9 @@ public abstract class BaseActivity extends AppCompatActivity {
             navRoom.setBackgroundColor(getResources().getColor(R.color.gray_dark));
         } else if (iconResId == R.id.iconUser) {
             navUser.setBackgroundColor(getResources().getColor(R.color.gray_dark));
+        }
+        else if (iconResId == R.id.iconService) {
+            navService.setBackgroundColor(getResources().getColor(R.color.gray_dark));
         }
     }
 }

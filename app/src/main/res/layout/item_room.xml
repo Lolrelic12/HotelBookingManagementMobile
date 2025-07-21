@@ -1,135 +1,200 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- item_room.xml -->
+<!-- item_room_improved.xml -->
 
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    android:layout_margin="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="6dp"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
+        <!-- Header Section với Room Number và Availability -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:paddingBottom="8dp"
+            android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/tvRoomNumber"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Room: 101"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:orientation="vertical">
 
+                <TextView
+                    android:id="@+id/tvRoomNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Room 101"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black" />
+
+                <TextView
+                    android:id="@+id/tvRoomType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="President Room"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginTop="2dp" />
+
+            </LinearLayout>
+
+            <!-- Availability Badge -->
             <TextView
                 android:id="@+id/tvAvailability"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Available"
-                android:textStyle="bold" />
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp" />
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvRoomId"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="ID: R001"
-            android:textSize="12sp"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginTop="4dp" />
-
-        <TextView
-            android:id="@+id/tvRoomType"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Type: Deluxe Room"
-            android:textSize="12sp"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginTop="2dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
-
-            <TextView
-                android:id="@+id/tvCapacity"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Capacity: 2 guests"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/tvPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Price: $100/night"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Room description"
-            android:textSize="14sp"
-            android:layout_marginTop="8dp"
-            android:maxLines="2"
-            android:ellipsize="end" />
-
-        <!-- Image RecyclerView - Always visible for testing -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Room Images:"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp"
-            android:textColor="@android:color/darker_gray" />
-
+        <!-- Room Images Section -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewRoomImages"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:layout_marginTop="4dp"
-            android:background="#f0f0f0"
-            android:visibility="visible" />
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:clipToPadding="false"
+            android:scrollbars="none"
+            android:overScrollMode="never" />
 
+        <!-- Room Details Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:paddingTop="12dp">
 
-            <TextView
-                android:id="@+id/tvRating"
-                android:layout_width="wrap_content"
+            <!-- Price and Capacity Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Rating: 4.5/5"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
 
+                <TextView
+                    android:id="@+id/tvPrice"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="125.00 VND/night"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#E91E63" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_person" />
+
+                    <TextView
+                        android:id="@+id/tvCapacity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2 guests"
+                        android:textSize="14sp"
+                        android:textColor="#666666"
+                        android:layout_marginStart="4dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Description -->
             <TextView
-                android:id="@+id/tvReviews"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvDescription"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="(10 reviews)"
+                android:text="Economy room with basic amenities"
                 android:textSize="14sp"
-                android:layout_marginStart="8dp"
-                android:textColor="@android:color/darker_gray" />
+                android:textColor="#333333"
+                android:lineSpacingMultiplier="1.2"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0"
+                android:layout_marginVertical="8dp" />
+
+            <!-- Bottom Info Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- Room ID -->
+                <TextView
+                    android:id="@+id/tvRoomId"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="ID: R021"
+                    android:textSize="12sp"
+                    android:textColor="#999999" />
+
+                <!-- Rating Section -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_star" />
+
+                    <TextView
+                        android:id="@+id/tvRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3.50"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="#333333"
+                        android:layout_marginStart="4dp" />
+
+                    <TextView
+                        android:id="@+id/tvReviews"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="(4 reviews)"
+                        android:textSize="12sp"
+                        android:textColor="#666666"
+                        android:layout_marginStart="4dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 

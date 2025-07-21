@@ -1,0 +1,50 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:elevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <ImageView
+            android:id="@+id/imgService"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="image" />
+
+        <TextView
+            android:id="@+id/tvServiceName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Service Name"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status: Available"
+            android:textColor="@android:color/holo_green_dark"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/tvPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Price: VND 0.00"
+            android:layout_marginTop="4dp"/>
+
+        <Button
+            android:id="@+id/btnAddService"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

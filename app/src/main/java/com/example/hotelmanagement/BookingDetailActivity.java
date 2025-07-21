@@ -3,22 +3,16 @@ package com.example.hotelmanagement;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import com.example.hotelmanagement.dto.BookingRequest;
-import com.example.hotelmanagement.dto.BookingResponse;
-import com.example.hotelmanagement.dto.RoomResponse;
-import com.example.hotelmanagement.services.api.ApiService;
-import com.example.hotelmanagement.services.api.Callback;
+import com.example.hotelmanagement.dto.*;
+import com.example.hotelmanagement.services.api.*;
 import com.google.gson.Gson;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.UUID;
+import java.text.*;
+import java.util.*;
+import com.example.hotelmanagement.extensions.JwtHelper;
+
 
 public class BookingDetailActivity extends AppCompatActivity {
     public static final String EXTRA_ROOM_DATA = "room_data";
@@ -33,6 +27,7 @@ public class BookingDetailActivity extends AppCompatActivity {
     private Gson gson;
     private DecimalFormat decimalFormat;
     private ApiService apiService;
+    private RoomTypeActivity roomTypeService;
 
     private TextView tvRoomNumber, tvRoomType, tvRoomPrice, tvCheckInDate,
             tvCheckOutDate, tvTotalNights, tvTotalPrice, tvBookingStatus;
@@ -76,6 +71,7 @@ public class BookingDetailActivity extends AppCompatActivity {
         gson = new Gson();
         decimalFormat = new DecimalFormat("0.00 VND");
         apiService = ApiService.getInstance(this);
+        roomTypeService = new RoomTypeActivity(this);
     }
 
     private void loadBookingData() {
@@ -87,6 +83,7 @@ public class BookingDetailActivity extends AppCompatActivity {
                 roomData = gson.fromJson(roomDataJson, RoomResponse.class);
                 bookingRequest = gson.fromJson(bookingDataJson, BookingRequest.class);
                 displayBookingDetails();
+                loadRoomTypes();
             } catch (Exception e) {
                 Toast.makeText(this, "Error loading booking data", Toast.LENGTH_SHORT).show();
                 finish();
@@ -97,10 +94,41 @@ public class BookingDetailActivity extends AppCompatActivity {
         }
     }
 
+    private void loadRoomTypes() {
+        roomTypeService.getAllRoomTypes(new Callback<RoomTypeResponse[]>() {
+            @Override
+            public void onSuccess(RoomTypeResponse[] result) {
+                runOnUiThread(() -> {
+                    if (roomData != null) {
+                        updateRoomTypeDisplay();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                runOnUiThread(() -> {
+                    tvRoomType.setText("Unknown Type");
+                });
+            }
+        });
+    }
+
+    private void updateRoomTypeDisplay() {
+        if (roomData != null && roomData.getRoomTypeId() != null) {
+            String description = roomTypeService.getRoomTypeDescription(roomData.getRoomTypeId());
+            tvRoomType.setText(textOrDefault(description, "Unknown Type"));
+        } else {
+            tvRoomType.setText("Unknown Type");
+        }
+    }
+
     private void displayBookingDetails() {
         if (roomData != null && bookingRequest != null) {
             tvRoomNumber.setText("Room " + roomData.getRoomNumber());
             tvRoomPrice.setText(decimalFormat.format(roomData.getPrice()) + "/night");
+
+            tvRoomType.setText("Loading...");
 
             String checkInDate = getIntent().getStringExtra(EXTRA_CHECK_IN_DATE);
             String checkOutDate = getIntent().getStringExtra(EXTRA_CHECK_OUT_DATE);
@@ -165,14 +193,38 @@ public class BookingDetailActivity extends AppCompatActivity {
     private BookingRequest prepareBookingRequest() {
         BookingRequest request = new BookingRequest();
         request.setId(UUID.randomUUID().toString());
-        request.setUserId("26a2da04-d00f-41cb-8783-17fcf11f099c");
+        TokenManager tokenManager = new TokenManager(this);
+        String token = tokenManager.getToken();
 
-//        String userId = getSharedPreferences("UserPrefs", MODE_PRIVATE).getString("userId", null);
-//        if (userId == null) {
-//            Toast.makeText(this, "User ID not found. Please log in again.", Toast.LENGTH_SHORT).show();
-//            return null;
-//        }
-//        request.setUserId(userId);
+        if (token == null || token.isEmpty()) {
+            Toast.makeText(this, "No authentication token found. Please log in.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+            return null;
+        }
+
+        JwtHelper jwtHelper = new JwtHelper(token);
+
+        if (jwtHelper.isExpired()) {
+            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show();
+            tokenManager.clearToken();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+            return null;
+        }
+
+        String userId = jwtHelper.getUserId();
+        if (userId == null || userId.isEmpty()) {
+            Toast.makeText(this, "Cannot get user ID from token. Please log in again.", Toast.LENGTH_SHORT).show();
+            tokenManager.clearToken();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+            return null;
+        }
+        request.setUserId(userId);
         request.setRoomId(roomData.getId());
 
         String checkInDate = getIntent().getStringExtra(EXTRA_CHECK_IN_DATE);
@@ -184,6 +236,7 @@ public class BookingDetailActivity extends AppCompatActivity {
         request.setTotalPrice(totalPrice);
         request.setBookingStatus(0);
         request.setCreatedAt(getCurrentTimestamp());
+
         return request;
     }
 
@@ -236,5 +289,9 @@ public class BookingDetailActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         navigateBackToRoomDetail();
+    }
+
+    private String textOrDefault(String value, String fallback) {
+        return value != null && !value.trim().isEmpty() ? value : fallback;
     }
 }

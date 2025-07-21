@@ -1,5 +1,6 @@
 package com.example.hotelmanagement;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.*;
 import android.view.View;
@@ -13,9 +14,8 @@ import com.google.gson.Gson;
 import com.google.gson.*;
 import java.util.*;
 
-public class RoomListActivity extends AppCompatActivity {
+public class RoomListActivity extends BaseActivity {
     private static final int ITEMS_PER_PAGE = 10;
-
     private RecyclerView recyclerView;
     private RoomAdapter roomAdapter;
     private List<RoomResponse> originalRoomList = new ArrayList<>();
@@ -43,7 +43,8 @@ public class RoomListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_list);
-
+        setupFooterNavigation();
+        highlightFooterIcon(R.id.iconRoom);
         initViews();
         setupApi();
         setupRecyclerView();

@@ -19,17 +19,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.hotelmanagement.adapter.ServiceAdapter;
-import com.example.hotelmanagement.dto.RoomResponse;
 import com.example.hotelmanagement.dto.Service.Service;
 import com.example.hotelmanagement.dto.Service.ServiceInRoomWrapper;
-import com.example.hotelmanagement.dto.Service.ServiceResponse;
+import com.example.hotelmanagement.dto.Service.ServiceOrderRequest;
+import com.example.hotelmanagement.dto.Service.ServiceOrderResponse;
 import com.example.hotelmanagement.dto.Service.ServicesInRoomResponse;
 import com.example.hotelmanagement.services.api.ApiService;
 import com.example.hotelmanagement.services.api.Callback;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
 
 public class ServiceListActivity extends AppCompatActivity {
 
@@ -39,7 +39,7 @@ public class ServiceListActivity extends AppCompatActivity {
     private Button btnConfirm;
     ServiceAdapter adapter;
     ServicesInRoomResponse serviceItems = new ServicesInRoomResponse();
-
+    ArrayList<String> serviceIds = new ArrayList<>();
     private ApiService apiService;
     private LinearLayout selectedServiceList;
 
@@ -58,6 +58,26 @@ public class ServiceListActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerServices);
         tvTotalPrice = findViewById(R.id.tvTotalPrice);
         btnConfirm = findViewById(R.id.btnConfirmOrder);
+        btnConfirm.setOnClickListener(v -> {
+            if (selectedServiceList.getChildCount() == 0) {
+                Toast.makeText(this, "Please select at least one service.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Confirm Order")
+                    .setMessage("Are you sure you want to order the selected services?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+
+                        ServiceOrderRequest serviceOrderRequest = new ServiceOrderRequest();
+                        serviceOrderRequest.ServiceIds = serviceIds;
+                        orderService(serviceOrderRequest);
+                        selectedServiceList.removeAllViews();
+                        total = 0;
+                        tvTotalPrice.setText("VND 0.00");
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
         selectedServiceList = findViewById(R.id.selectedServiceList);
         loadMockServices();
         adapter = new ServiceAdapter(serviceItems, this::onAddService, this);
@@ -75,7 +95,7 @@ public class ServiceListActivity extends AppCompatActivity {
         // Prevent duplicate service being added
         for (int i = 0; i < selectedServiceList.getChildCount(); i++) {
             TextView existingName = selectedServiceList.getChildAt(i).findViewById(R.id.tvSelectedServiceName);
-            if (existingName != null && existingName.getText().toString().startsWith(item.getName())) {
+            if (serviceIds.contains(item.getId())) {
                 Toast.makeText(this, "Service already added.", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -106,14 +126,37 @@ public class ServiceListActivity extends AppCompatActivity {
             total -= item.getPrice();
             if (total < 0) total = 0;
             tvTotalPrice.setText(String.format("VND %.2f", total));
+            serviceIds.remove((String) item.getId());
         });
 
         selectedServiceList.addView(view);
         total += item.getPrice();
         tvTotalPrice.setText(String.format("VND %.2f", total));
+        serviceIds.add(item.getId());
     }
 
 
+    private void orderService(ServiceOrderRequest request){
+        String bookingId = getIntent().getStringExtra("bookingId");
+        request.RoomBookingId = bookingId;
+        apiService.postAsync("api/ServiceBooking/BookService",request, ServiceOrderResponse.class, new Callback<ServiceOrderResponse>() {
+            @Override
+            public void onSuccess(ServiceOrderResponse result) {
+                runOnUiThread(() -> {
+                    if (result != null) {
+                        Toast.makeText(ServiceListActivity.this, "Order confirmed!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                runOnUiThread(() ->
+                        Toast.makeText(ServiceListActivity.this, "Failed to order service" + error.toString(), Toast.LENGTH_SHORT).show()
+                );
+            }
+        });
+    }
     private void loadMockServices() {
         String roomId = getIntent().getStringExtra("roomId");
         String bookingId = getIntent().getStringExtra("bookingId");

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.hotelmanagement.R;
 import com.example.hotelmanagement.ServiceDetailActivity;
 import com.example.hotelmanagement.dto.Service.Service;
@@ -65,6 +66,11 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ServiceV
             intent.putExtra("available", item.isAvailable());
             context.startActivity(intent);
         });
+        // ✅ Load image using Glide
+        Glide.with(context)
+                .load(item.getImageUrl())
+                .placeholder(R.drawable.ic_placeholder)
+                .into(holder.img);
     }
 
     @Override

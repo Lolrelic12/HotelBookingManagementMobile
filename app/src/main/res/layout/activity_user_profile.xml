@@ -46,6 +46,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/bookingRecyclerView"/>
+
     <!-- Footer (if not already included via <include>) -->
     <LinearLayout
         android:id="@+id/footer"

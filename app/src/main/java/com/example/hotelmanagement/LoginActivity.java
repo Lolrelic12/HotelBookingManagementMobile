@@ -21,6 +21,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText usernameField, passwordField;
     private Button loginButton;
     private TextView resultText;
+    private TokenManager tokenManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +35,11 @@ public class LoginActivity extends AppCompatActivity {
 
         loginButton.setOnClickListener(v -> attemptLogin());
 
-        TokenManager tokenManager = new TokenManager(this);
+        tokenManager = new TokenManager(this);
+
+        if (tokenManager.hasToken()) {
+            tokenManager.clearToken();
+        }
     }
 
     private void attemptLogin() {

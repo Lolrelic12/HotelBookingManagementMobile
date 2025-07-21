@@ -21,6 +21,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText usernameField, emailField, passwordField, confirmPasswordField;
     private Button registerButton;
     private TextView resultText;
+    private TokenManager tokenManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,12 @@ public class RegisterActivity extends AppCompatActivity {
         confirmPasswordField = findViewById(R.id.confirmPasswordField);
         registerButton = findViewById(R.id.registerButton);
         resultText = findViewById(R.id.resultText);
+
+        tokenManager = new TokenManager(this);
+
+        if (tokenManager.hasToken()) {
+            tokenManager.clearToken();
+        }
 
         registerButton.setOnClickListener(v -> attemptRegistration());
     }
@@ -84,8 +91,7 @@ public class RegisterActivity extends AppCompatActivity {
                 new Callback<LoginResponse>() {
                     @Override
                     public void onSuccess(LoginResponse result) {
-                        TokenManager tm = new TokenManager(RegisterActivity.this);
-                        tm.saveToken(result.getToken());
+                        tokenManager.saveToken(result.getToken());
 
                         Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                         startActivity(intent);

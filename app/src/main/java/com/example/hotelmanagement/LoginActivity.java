@@ -20,8 +20,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText usernameField, passwordField;
     private Button loginButton;
-    private Button logoutButton;
     private TextView resultText;
+    private TokenManager tokenManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,19 +35,11 @@ public class LoginActivity extends AppCompatActivity {
 
         loginButton.setOnClickListener(v -> attemptLogin());
 
-        logoutButton = findViewById(R.id.logoutButton);
-        TokenManager tokenManager = new TokenManager(this);
+        tokenManager = new TokenManager(this);
 
         if (tokenManager.hasToken()) {
-            logoutButton.setVisibility(View.VISIBLE);
-            resultText.setText("Token already exists:\n" + tokenManager.getToken());
-        }
-
-        logoutButton.setOnClickListener(v -> {
             tokenManager.clearToken();
-            logoutButton.setVisibility(View.GONE);
-            resultText.setText("Logged out.");
-        });
+        }
     }
 
     private void attemptLogin() {
@@ -82,33 +74,6 @@ public class LoginActivity extends AppCompatActivity {
                     public void onFailure(Throwable error) {
                         runOnUiThread(() ->
                                 resultText.setText("Login failed: " + error.getMessage()));
-                    }
-                }
-        );
-    }
-
-    private void attemptLogout() {
-        ApiService.getInstance(this).postAsync(
-                "api/Auth/Logout",
-                new Object(),
-                Boolean.class,
-                new Callback<Boolean>() {
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        TokenManager tm = new TokenManager(LoginActivity.this);
-                        tm.clearToken();
-
-                        runOnUiThread(() -> {
-                            logoutButton.setVisibility(View.GONE);
-                            resultText.setText("Logged out successfully.");
-                        });
-                    }
-
-                    @Override
-                    public void onFailure(Throwable error) {
-                        runOnUiThread(() ->
-                                resultText.setText("Logout failed: " + error.getMessage())
-                        );
                     }
                 }
         );

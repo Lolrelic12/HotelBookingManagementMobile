@@ -34,64 +34,38 @@
                 android:text="Register"
                 android:layout_marginTop="8dp" />
         </LinearLayout>
-
-        <!-- Authenticated View (Visible when logged in) -->
-        <LinearLayout
-            android:id="@+id/authLayout"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/welcomeText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Welcome!"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="16dp" />
-
-            <Button
-                android:id="@+id/viewRoomsButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="View Available Rooms" />
-
-            <!-- Add more buttons as needed -->
-        </LinearLayout>
     </LinearLayout>
 
     <!-- Sidebar Menu -->
-    <LinearLayout
-        android:id="@+id/sidebar"
-        android:layout_width="240dp"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_gravity="start"
-        android:background="#EFEFEF"
-        android:padding="16dp">
+<!--    <LinearLayout-->
+<!--        android:id="@+id/sidebar"-->
+<!--        android:layout_width="240dp"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:orientation="vertical"-->
+<!--        android:layout_gravity="start"-->
+<!--        android:background="#EFEFEF"-->
+<!--        android:padding="16dp">-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Menu"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Menu"-->
+<!--            android:textSize="20sp"-->
+<!--            android:textStyle="bold"-->
+<!--            android:layout_marginBottom="16dp" />-->
 
-        <Button
-            android:id="@+id/profileButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="User Profile" />
+<!--        <Button-->
+<!--            android:id="@+id/profileButton"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="User Profile" />-->
 
-        <Button
-            android:id="@+id/logoutButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Logout"
-            android:layout_marginTop="8dp" />
-    </LinearLayout>
+<!--        <Button-->
+<!--            android:id="@+id/logoutButton"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Logout"-->
+<!--            android:layout_marginTop="8dp" />-->
+<!--    </LinearLayout>-->
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -11,6 +11,7 @@ import com.example.hotelmanagement.services.api.*;
 import com.google.gson.Gson;
 import java.text.*;
 import java.util.*;
+import com.example.hotelmanagement.extensions.JwtHelper;
 
 
 public class BookingDetailActivity extends AppCompatActivity {
@@ -192,14 +193,38 @@ public class BookingDetailActivity extends AppCompatActivity {
     private BookingRequest prepareBookingRequest() {
         BookingRequest request = new BookingRequest();
         request.setId(UUID.randomUUID().toString());
-        request.setUserId("26a2da04-d00f-41cb-8783-17fcf11f099c");
+        TokenManager tokenManager = new TokenManager(this);
+        String token = tokenManager.getToken();
 
-//        String userId = getSharedPreferences("UserPrefs", MODE_PRIVATE).getString("userId", null);
-//        if (userId == null) {
-//            Toast.makeText(this, "User ID not found. Please log in again.", Toast.LENGTH_SHORT).show();
-//            return null;
-//        }
-//        request.setUserId(userId);
+        if (token == null || token.isEmpty()) {
+            Toast.makeText(this, "No authentication token found. Please log in.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+            return null;
+        }
+
+        JwtHelper jwtHelper = new JwtHelper(token);
+
+        if (jwtHelper.isExpired()) {
+            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show();
+            tokenManager.clearToken();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+            return null;
+        }
+
+        String userId = jwtHelper.getUserId();
+        if (userId == null || userId.isEmpty()) {
+            Toast.makeText(this, "Cannot get user ID from token. Please log in again.", Toast.LENGTH_SHORT).show();
+            tokenManager.clearToken();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+            return null;
+        }
+        request.setUserId(userId);
         request.setRoomId(roomData.getId());
 
         String checkInDate = getIntent().getStringExtra(EXTRA_CHECK_IN_DATE);
@@ -211,6 +236,7 @@ public class BookingDetailActivity extends AppCompatActivity {
         request.setTotalPrice(totalPrice);
         request.setBookingStatus(0);
         request.setCreatedAt(getCurrentTimestamp());
+
         return request;
     }
 

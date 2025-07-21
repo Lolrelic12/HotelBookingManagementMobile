@@ -11,6 +11,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.*;
 import com.example.hotelmanagement.adapter.*;
 import com.example.hotelmanagement.dto.*;
+import com.example.hotelmanagement.extensions.JwtHelper;
 import com.example.hotelmanagement.services.api.*;
 import com.google.gson.*;
 import java.text.DecimalFormat;
@@ -102,7 +103,7 @@ public class RoomDetailActivity extends AppCompatActivity {
         rvRoomImages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvRoomImages.setAdapter(imageAdapter);
 
-        reviewAdapter = new ReviewAdapter(reviewList);
+        reviewAdapter = new ReviewAdapter(reviewList, this);
         rvReviews.setLayoutManager(new LinearLayoutManager(this));
         rvReviews.setAdapter(reviewAdapter);
     }
@@ -230,7 +231,7 @@ public class RoomDetailActivity extends AppCompatActivity {
             return;
         }
 
-        apiService.getAsync("api/Review/GetByRoomId/" + roomGuid, ReviewReponse[].class, new Callback<>() {
+        apiService.getAsync("api/Review/GetByRoomIdMB/" + roomGuid, ReviewReponse[].class, new Callback<>() {
             public void onSuccess(ReviewReponse[] result) {
                 runOnUi(() -> {
                     reviewList.clear();
@@ -358,8 +359,22 @@ public class RoomDetailActivity extends AppCompatActivity {
 
     private void checkUserBookingStatus() {
         if (roomGuid == null || hasBookedRoom) return;
-
-        String userId = "26A2DA04-D00F-41CB-8783-17FCF11F099C";
+        TokenManager tokenManager = new TokenManager(this);
+        String token = tokenManager.getToken();
+        if (token == null || token.isEmpty()) {
+            runOnUi(() -> hasBookedRoom = false);
+            return;
+        }
+        JwtHelper jwtHelper = new JwtHelper(token);
+        if (jwtHelper.isExpired()) {
+            runOnUi(() -> hasBookedRoom = false);
+            return;
+        }
+        String userId = jwtHelper.getUserId();
+        if (userId == null || userId.isEmpty()) {
+            runOnUi(() -> hasBookedRoom = false);
+            return;
+        }
         String url = "api/Booking/GetAll?filterBy=UserId&searchTerm=" + userId;
 
         apiService.getAsync(url, BookingResponse[].class, new Callback<>() {

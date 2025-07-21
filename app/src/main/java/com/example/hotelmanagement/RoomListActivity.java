@@ -176,7 +176,7 @@ public class RoomListActivity extends AppCompatActivity {
     }
 
     private void loadImages() {
-        apiService.getAsync("api/Image/GetAll", JsonElement.class, new Callback<JsonElement>() {
+        apiService.getAsync("api/Image/GetAllMB", JsonElement.class, new Callback<JsonElement>() {
             @Override
             public void onSuccess(JsonElement result) {
                 runOnUiThread(() -> {

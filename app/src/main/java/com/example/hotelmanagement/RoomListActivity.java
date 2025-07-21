@@ -2,23 +2,16 @@ package com.example.hotelmanagement;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.text.*;
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import com.example.hotelmanagement.adapter.RoomAdapter;
-import com.example.hotelmanagement.dto.ImageResponse;
-import com.example.hotelmanagement.dto.RoomResponse;
-import com.example.hotelmanagement.dto.RoomTypeResponse;
-import com.example.hotelmanagement.services.api.ApiService;
-import com.example.hotelmanagement.services.api.Callback;
+import androidx.recyclerview.widget.*;
+import com.example.hotelmanagement.adapter.*;
+import com.example.hotelmanagement.dto.*;
+import com.example.hotelmanagement.services.api.*;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
+import com.google.gson.*;
 import java.util.*;
 
 public class RoomListActivity extends BaseActivity {
@@ -32,7 +25,7 @@ public class RoomListActivity extends BaseActivity {
 
     private EditText etSearchRoomNumber;
     private Spinner spinnerAvailabilityFilter, spinnerSortBy;
-    private Button btnPrevPage, btnNextPage;
+    private ImageButton btnPrevPage, btnNextPage;
     private TextView tvPageInfo;
 
     private int currentPage = 1;
@@ -43,6 +36,8 @@ public class RoomListActivity extends BaseActivity {
 
     private ApiService apiService;
     private RoomTypeActivity roomTypeService;
+
+    private boolean isFirstLoad = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +82,7 @@ public class RoomListActivity extends BaseActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 currentSearchQuery = s.toString().trim();
-                applyFiltersAndSort();
+                applyFiltersAndSort(true);
             }
         });
 
@@ -103,7 +98,7 @@ public class RoomListActivity extends BaseActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String[] options = {"all", "available", "unavailable"};
                 currentAvailabilityFilter = options[position];
-                applyFiltersAndSort();
+                applyFiltersAndSort(true);
             }
         });
 
@@ -119,7 +114,7 @@ public class RoomListActivity extends BaseActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String[] sortOptions = {"room_number", "price", "rating"};
                 currentSortBy = sortOptions[position];
-                applyFiltersAndSort();
+                applyFiltersAndSort(false);
             }
         });
     }
@@ -166,7 +161,8 @@ public class RoomListActivity extends BaseActivity {
                     if (result != null) {
                         Collections.addAll(originalRoomList, result);
                     }
-                    applyFiltersAndSort();
+                    applyFiltersAndSort(isFirstLoad);
+                    isFirstLoad = false;
                     loadImages();
                 });
             }
@@ -181,7 +177,7 @@ public class RoomListActivity extends BaseActivity {
     }
 
     private void loadImages() {
-        apiService.getAsync("api/Image/GetAll", JsonElement.class, new Callback<JsonElement>() {
+        apiService.getAsync("api/Image/GetAllMB", JsonElement.class, new Callback<JsonElement>() {
             @Override
             public void onSuccess(JsonElement result) {
                 runOnUiThread(() -> {
@@ -223,7 +219,7 @@ public class RoomListActivity extends BaseActivity {
         });
     }
 
-    private void applyFiltersAndSort() {
+    private void applyFiltersAndSort(boolean resetToFirstPage) {
         filteredRoomList.clear();
 
         for (RoomResponse room : originalRoomList) {
@@ -240,7 +236,17 @@ public class RoomListActivity extends BaseActivity {
         }
 
         sortRooms();
-        currentPage = 1;
+
+        if (resetToFirstPage) {
+            currentPage = 1;
+        } else {
+            int newTotalPages = (int) Math.ceil((double) filteredRoomList.size() / ITEMS_PER_PAGE);
+            if (newTotalPages == 0) newTotalPages = 1;
+            if (currentPage > newTotalPages) {
+                currentPage = newTotalPages;
+            }
+        }
+
         updatePagination();
         updateCurrentPage();
     }
@@ -273,7 +279,9 @@ public class RoomListActivity extends BaseActivity {
         int startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
         int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, filteredRoomList.size());
 
-        currentPageRoomList.addAll(filteredRoomList.subList(startIndex, endIndex));
+        if (startIndex < filteredRoomList.size()) {
+            currentPageRoomList.addAll(filteredRoomList.subList(startIndex, endIndex));
+        }
         roomAdapter.notifyDataSetChanged();
         updatePaginationButtons();
     }

@@ -63,6 +63,7 @@ public class ApiService {
 
         retrofit = new Retrofit.Builder()
                 .baseUrl("https://10.0.2.2:7019/")
+                //.baseUrl("https://localhost:7019/")
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();

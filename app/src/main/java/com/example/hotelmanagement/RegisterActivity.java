@@ -2,7 +2,9 @@ package com.example.hotelmanagement;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -19,6 +21,7 @@ import com.example.hotelmanagement.services.api.TokenManager;
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText usernameField, emailField, passwordField, confirmPasswordField;
+    private CheckBox termsCheckBox;
     private Button registerButton;
     private TextView resultText;
     private TokenManager tokenManager;
@@ -34,6 +37,9 @@ public class RegisterActivity extends AppCompatActivity {
         confirmPasswordField = findViewById(R.id.confirmPasswordField);
         registerButton = findViewById(R.id.registerButton);
         resultText = findViewById(R.id.resultText);
+        termsCheckBox = findViewById(R.id.termsCheckbox);
+
+        resultText.setVisibility(View.GONE);
 
         tokenManager = new TokenManager(this);
 
@@ -52,11 +58,19 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
             resultText.setText("Please enter username, email and password.");
+            resultText.setVisibility(View.VISIBLE);
             return;
         }
 
         if (!confirmPassword.equals(password)) {
             resultText.setText("Passwords do not match.");
+            resultText.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        if (!termsCheckBox.isChecked()) {
+            resultText.setText("Please agree to the terms and conditions.");
+            resultText.setVisibility(View.VISIBLE);
             return;
         }
 
@@ -76,6 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onFailure(Throwable error) {
                         runOnUiThread(() ->
                                 resultText.setText("Registration failed: " + error.getMessage()));
+                                resultText.setVisibility(View.VISIBLE);
                     }
                 }
         );
@@ -102,6 +117,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onFailure(Throwable error) {
                         runOnUiThread(() ->
                                 resultText.setText("Registration failed: " + error.getMessage()));
+                                resultText.setVisibility(View.VISIBLE);
                     }
                 }
         );

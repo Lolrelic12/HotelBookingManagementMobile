@@ -33,6 +33,8 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.loginButton);
         resultText = findViewById(R.id.resultText);
 
+        resultText.setVisibility(View.GONE);
+
         loginButton.setOnClickListener(v -> attemptLogin());
 
         tokenManager = new TokenManager(this);
@@ -48,6 +50,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (username.isEmpty() || password.isEmpty()) {
             resultText.setText("Please enter both username and password.");
+            resultText.setVisibility(View.VISIBLE);
             return;
         }
 

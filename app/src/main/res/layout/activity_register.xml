@@ -150,6 +150,18 @@
 
             </LinearLayout>
 
+            <!-- Error/Success Message -->
+            <TextView
+                android:id="@+id/resultText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textAlignment="center"
+                android:textSize="14sp"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"
+                android:visibility="gone" />
+
             <!-- Register Button -->
             <Button
                 android:id="@+id/registerButton"
@@ -198,16 +210,7 @@
 
         </LinearLayout>
 
-        <!-- Error/Success Message -->
-        <TextView
-            android:id="@+id/resultText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textAlignment="center"
-            android:textSize="14sp"
-            android:paddingTop="16dp"
-            android:visibility="gone" />
+
 
     </LinearLayout>
 

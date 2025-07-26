@@ -41,7 +41,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         if (navService != null) {
             navService.setOnClickListener(v -> {
-                if (!(this instanceof UserProfileActivity)) {
+                if (!(this instanceof UserOrdersActivity)) {
                     startActivity(new Intent(this, UserOrdersActivity.class));
                 }
             });

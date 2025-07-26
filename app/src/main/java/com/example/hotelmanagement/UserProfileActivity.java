@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,21 +15,26 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hotelmanagement.adapter.BookingAdapter;
+import com.example.hotelmanagement.dto.BookedRoomResponse;
 import com.example.hotelmanagement.dto.BookingResponse;
+import com.example.hotelmanagement.dto.RoomResponse;
 import com.example.hotelmanagement.extensions.JwtHelper;
 import com.example.hotelmanagement.services.api.ApiService;
 import com.example.hotelmanagement.services.api.Callback;
 import com.example.hotelmanagement.services.api.TokenManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class UserProfileActivity extends BaseActivity {
 
     private RecyclerView bookingRecyclerView;
     private BookingAdapter adapter;
-    private List<BookingResponse> bookings;
+    private List<BookedRoomResponse> roomsBooked = new ArrayList<BookedRoomResponse>();
     private Button logoutButton, changePasswordButton;
+
+    private ApiService apiService;
     private TokenManager tokenManager;
     JwtHelper jwtHelper;
 
@@ -38,7 +44,7 @@ public class UserProfileActivity extends BaseActivity {
         setContentView(R.layout.activity_user_profile);
         setupFooterNavigation();
         highlightFooterIcon(R.id.iconUser);
-
+        apiService = ApiService.getInstance(this);
         logoutButton = findViewById(R.id.logoutButton);
         changePasswordButton = findViewById(R.id.changePasswordButton);
         tokenManager = new TokenManager(this);
@@ -74,16 +80,31 @@ public class UserProfileActivity extends BaseActivity {
 
         TextView username = findViewById(R.id.usernameText);
         username.setText(jwtHelper.getUsername());
-
-        // Dummy booking data
-        bookings = new ArrayList<>();
-//        bookings.add(new BookingResponse("Room 101", "2025-07-15", "Checked In"));
-//        bookings.add(new BookingResponse("Room 202", "2025-06-12", "Checked Out"));
-//        bookings.add(new BookingResponse("Room 305", "2025-05-05", "Cancelled"));
-
+        String userid = jwtHelper.getUserId();
+        loadBookedRooms(userid);
         bookingRecyclerView = findViewById(R.id.bookingRecyclerView);
         bookingRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new BookingAdapter(bookings);
+        adapter = new BookingAdapter(this,roomsBooked);
         bookingRecyclerView.setAdapter(adapter);
+    }
+
+    private void loadBookedRooms(String userId) {
+        apiService.getAsync("api/Booking/GetBookingByUserId?userId=" + userId, BookedRoomResponse[].class, new Callback<BookedRoomResponse[]>() {
+            @Override
+            public void onSuccess(BookedRoomResponse[] result) {
+                runOnUiThread(() -> {
+                    if (result != null) {
+                        Collections.addAll(roomsBooked, result);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                runOnUiThread(() ->
+                        Toast.makeText(UserProfileActivity.this, "Failed to load booked rooms", Toast.LENGTH_SHORT).show()
+                );
+            }
+        });
     }
 }

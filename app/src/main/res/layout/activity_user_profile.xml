@@ -6,6 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F5F5F5"
     tools:context=".UserProfileActivity">
 
     <!-- Profile Picture -->
@@ -20,6 +21,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:scaleType="centerCrop"
         android:background="@drawable/circle_background"
+        android:elevation="4dp"
         android:padding="8dp" />
 
     <!-- Username -->
@@ -29,7 +31,8 @@
         android:layout_height="wrap_content"
         android:text="John Doe"
         android:textStyle="bold"
-        android:textSize="18sp"
+        android:textSize="20sp"
+        android:textColor="#333"
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/profileImage"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,9 +45,9 @@
         android:layout_width="407dp"
         android:layout_height="358dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/footer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:clipToPadding="false"
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/logoutButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/usernameText"
         app:layout_constraintVertical_bias="0.041" />
@@ -57,6 +60,7 @@
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/bookingRecyclerView"/>
 
+    <!-- Logout Button -->
     <Button
         android:id="@+id/logoutButton"
         android:layout_width="match_parent"
@@ -69,57 +73,14 @@
         app:layout_constraintBottom_toTopOf="@id/footer"/>
 
 
-    <!-- Footer (if not already included via <include>) -->
-    <LinearLayout
+    <!-- Shared Footer Navigation -->
+    <include
         android:id="@+id/footer"
-        android:layout_width="0dp"
+        layout="@layout/footer_navigation"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#EEEEEE"
-        android:padding="12dp"
-        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <LinearLayout
-            android:id="@+id/navRoom"
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="8dp">
-
-            <ImageView
-                android:id="@+id/iconRoom"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_room" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Room" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navUser"
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="8dp">
-
-            <ImageView
-                android:id="@+id/iconUser"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_user" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="User" />
-        </LinearLayout>
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

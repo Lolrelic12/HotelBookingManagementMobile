@@ -26,8 +26,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         if (navRoom != null) {
             navRoom.setOnClickListener(v -> {
+
                 if (!(this instanceof RoomListActivity)) {
                     startActivity(new Intent(this, RoomListActivity.class));
+                    finish();
                 }
             });
         }
@@ -36,6 +38,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             navUser.setOnClickListener(v -> {
                 if (!(this instanceof UserProfileActivity)) {
                     startActivity(new Intent(this, UserProfileActivity.class));
+                    finish();
                 }
             });
         }
@@ -43,6 +46,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             navService.setOnClickListener(v -> {
                 if (!(this instanceof UserOrdersActivity)) {
                     startActivity(new Intent(this, UserOrdersActivity.class));
+                    finish();
                 }
             });
         }

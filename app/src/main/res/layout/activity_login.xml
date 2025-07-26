@@ -89,7 +89,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="24dp"/>
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:id="@+id/resultText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dp"
+                android:text=""
+                android:textAlignment="center"
+                android:textSize="14sp"
+                android:visibility="visible"
+                android:layout_marginBottom="16dp"/>
 
             <!-- Login Button -->
             <Button
@@ -134,15 +145,7 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/resultText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textAlignment="center"
-            android:textSize="14sp"
-            android:paddingTop="16dp"
-            android:visibility="gone" />
+
 
     </LinearLayout>
 

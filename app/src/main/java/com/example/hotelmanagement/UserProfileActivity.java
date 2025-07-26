@@ -32,7 +32,7 @@ public class UserProfileActivity extends BaseActivity {
     private RecyclerView bookingRecyclerView;
     private BookingAdapter adapter;
     private List<BookedRoomResponse> roomsBooked = new ArrayList<BookedRoomResponse>();
-    private Button logoutButton;
+    private Button logoutButton, changePasswordButton;
 
     private ApiService apiService;
     private TokenManager tokenManager;
@@ -46,6 +46,7 @@ public class UserProfileActivity extends BaseActivity {
         highlightFooterIcon(R.id.iconUser);
         apiService = ApiService.getInstance(this);
         logoutButton = findViewById(R.id.logoutButton);
+        changePasswordButton = findViewById(R.id.changePasswordButton);
         tokenManager = new TokenManager(this);
         jwtHelper = new JwtHelper(tokenManager.getToken());
 
@@ -70,6 +71,11 @@ public class UserProfileActivity extends BaseActivity {
                     // You can display error message here
                 }
             });
+        });
+
+        changePasswordButton.setOnClickListener(v -> {
+                    Intent intent = new Intent(UserProfileActivity.this, ChangePasswordActivity.class);
+                    startActivity(intent);
         });
 
         TextView username = findViewById(R.id.usernameText);
